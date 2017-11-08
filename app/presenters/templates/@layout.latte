@@ -1,0 +1,45 @@
+{**
+ * @param string   $basePath web base path
+ * @param array    $flashes  flash messages
+*}
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+
+    <title>{ifset title}{include title|stripHtml} | {/ifset}Nette Sandbox</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="{$basePath}/css/style.css">
+    <!--  Bootstrap start  -->        
+    <link rel="stylesheet" media="print" href="{$basePath}/css/bootstrap.css">
+    <!--  Bootstrap end  -->
+    {block head}{/block}
+    <script type="text/javascript">
+      Nette = {
+        noInit: true
+      }
+    </script>
+    <style>
+      div#outt { color: #3F0; background: #000; overflow: auto; padding:5px; height: 100%; }
+    </style>
+  </head>
+
+  <body>
+
+
+    {include content}
+    <div n:foreach="$flashes as $flash" n:class="flash, $flash->type">{$flash->message}</div>
+    {block scripts}
+    <script src="{$basePath}/js/jquery-3.1.1.min.js"></script>        
+    <script src="{$basePath}/js/netteForms.min.js"></script>        
+    <script src="{$basePath}/js/nette.ajax.js"></script>        
+    <!--  Bootstrap start  --> 
+    <script src="{$basePath}/js/popper.min.js"></script>
+    <script src="{$basePath}/js/bootstrap.min.js"></script>
+    <script src="{$basePath}/js/live-form-validation.js"></script>
+    <!--  Bootstrap end  -->
+    <script src="{$basePath}/js/main.js"></script>
+    {/block}
+  </body>
+</html>
