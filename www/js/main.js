@@ -1,6 +1,6 @@
 $(function () {
   $.nette.init();
-  
+
 //ksicht
   var actionClean = function () {
     $('#package_name_id').hide();
@@ -28,10 +28,20 @@ $(function () {
 //    }
 //    return false;
 //  });
+  //ochrana
+  var pom = 500;
 
-
-$.nette.ext('snippets').after(function ($el) {
-  alert(123);
-});
+  $.nette.ext('snippets').after(function ($el) {
+    var frm = $('#frm-composerForm');
+    $("#outt").scrollTop($("#outt")[0].scrollHeight);
+    var stop = $("#outt").html().indexOf("|||:::|||konec") > 0;
+    if (pom > 0 && !stop) {
+      setTimeout(function () {
+        frm.trigger('submit');
+      }, 250);
+//      frm.trigger('submit');
+      pom--;
+    }
+  });
 
 });

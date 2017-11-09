@@ -4,9 +4,9 @@
   {control composerForm}
  
 
-    <div id="outt" >:~>
+    <div id="outt" id-screen="{$id_screen}" >:~>
      {snippet ajaxBash}
-        {$output}
+        {$output|noescape}
     {/snippet}
     </div>
 
