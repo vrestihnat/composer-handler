@@ -7,8 +7,23 @@ use Nette;
 /**
  * Base presenter for all application presenters.
  */
-abstract class BasePresenter extends Nette\Application\UI\Presenter
+abstract class BasePresenter extends Nette\Application\UI\Presenter implements IPresenter
 {
+
+  /**
+   * @var \App\Components\ZendConfigFactor
+   */
+  private $zendConfigFactory;
+
+  public function injectZendConfigFactory(\App\Components\ZendConfigFactory $factory)
+  {
+    $this->zendConfigFactory = $factory;
+  }
+
+  public function getConfig()
+  {
+    return $this->zendConfigFactory->create();
+  }
 
   public function bashColorToHtml($string)
   {

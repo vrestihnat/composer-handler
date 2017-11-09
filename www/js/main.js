@@ -33,12 +33,13 @@ $(function () {
 
   $.nette.ext('snippets').after(function ($el) {
     var frm = $('#frm-composerForm');
-    $("#outt").scrollTop($("#outt")[0].scrollHeight);
     var stop = $("#outt").html().indexOf("|||:::|||konec") > 0;
+    var refresh = $("#outt").attr('refresh')*1;
+    $("#outt").scrollTop($("#outt")[0].scrollHeight);
     if (pom > 0 && !stop) {
       setTimeout(function () {
         frm.trigger('submit');
-      }, 250);
+      }, refresh);
 //      frm.trigger('submit');
       pom--;
     }

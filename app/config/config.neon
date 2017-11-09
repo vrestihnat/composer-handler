@@ -28,4 +28,5 @@ services:
 	- App\Forms\FormFactory
 	- App\Forms\SignInFormFactory
 	- App\Forms\SignUpFormFactory
+	- App\Components\ZendConfigFactory
 	router: App\RouterFactory::createRouter
