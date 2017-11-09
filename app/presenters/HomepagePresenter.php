@@ -24,19 +24,19 @@ class HomepagePresenter extends BasePresenter
 //    $form = new UI\Form;
     $form->ajax = true;
     $form->addGroup('Nastavení');
-    $form->addText('name', 'Název složky')->setRequired('Povinná položka ;)');
+    $form->addText('name', 'Název složky')->setRequired('Povinná položka ;)')->addRule(UI\Form::PATTERN, 'Špatný formát', '^(([a-z0-9_|-]+\.)*[a-z0-9_|-]+\.[a-z]+)|(?:[a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9-_]*[a-zA-Z0-9])$');
     $form->addSelect('exec', 'Interpret', array(
         'composer',
         'bash',
     ));
     $form->addRadioList('bash_action', 'Akce', array(
-        'install', 'update', 'update <vendor/package> ...', 'custom (pro machry)'
+        'install', 'update', 'update <vendor/package>', //'custom (pro machry)'
     ))->setOption('id', 'action_list_id');
 //            ->addCondition($form::EQUAL, 2)->toggle('package_name_id')->addCondition($form::EQUAL, 3)->toggle('expert_command_id');
 
-    $form->addText('package_name', 'Název balíku')->setOption('id', 'package_name_id');
+    $form->addText('package_name', 'Název balíku')->setOption('id', 'package_name_id')->addRule(UI\Form::PATTERN, 'Špatný formát', '(?:[a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9])\/(?:[a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9])');
 
-    $form->addText('expert_command', 'Příkaz experta: composer ')->setOption('id', 'expert_command_id');
+   // $form->addText('expert_command', 'Příkaz experta: composer ')->setOption('id', 'expert_command_id');
 
     //defaults
     $form->setDefaults([
@@ -45,7 +45,7 @@ class HomepagePresenter extends BasePresenter
 
     $form->addSubmit('process', 'Spustit')->setOption('id', 'process_id');
     $form->onSuccess[] = [$this, 'composerFormSucceeded'];
-
+    $this->template->output = 'ready';
     return $form;
   }
 
@@ -91,6 +91,7 @@ class HomepagePresenter extends BasePresenter
         $this->redrawControl('ajaxBash');
       }
     } else {
+      $this->template->output = 'ready';
       $this->flashMessage('Odesláno v pohodě.');
       $this->redirect('Homepage:');
     }
