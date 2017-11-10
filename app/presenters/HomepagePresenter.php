@@ -9,6 +9,8 @@ use Tracy\Debugger;
 class HomepagePresenter extends BasePresenter
 {
 
+  private $dirnames = [];
+
   public function renderDefault()
   {
     if (!$this->isAjax()) {
@@ -21,10 +23,12 @@ class HomepagePresenter extends BasePresenter
   protected function createComponentComposerForm()
   {
     $form = new BootstrapForm;
+    $config = $this->getConfig();
 //    $form = new UI\Form;
     $form->ajax = true;
     $form->addGroup('Nastavení');
-    $form->addText('name', 'Název složky')->setRequired('Povinná položka ;)')->addRule(UI\Form::PATTERN, 'Špatný formát', '^(([a-z0-9_|-]+\.)*[a-z0-9_|-]+\.[a-z]+)|(?:[a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9-_]*[a-zA-Z0-9])$');
+//    $form->addText('name', 'Název složky')->setRequired('Povinná položka ;)')->addRule(UI\Form::PATTERN, 'Špatný formát', '^(([a-z0-9_|-]+\.)*[a-z0-9_|-]+\.[a-z]+)|(?:[a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9-_]*[a-zA-Z0-9])$')->setOption('id', 'name_id');
+    $form->addSelect('name', 'Název složky', $this->getDirNames($config));
     $form->addSelect('exec', 'Interpret', array(
         'composer',
         'bash',
@@ -36,8 +40,7 @@ class HomepagePresenter extends BasePresenter
 
     $form->addText('package_name', 'Název balíku')->setOption('id', 'package_name_id')->addRule(UI\Form::PATTERN, 'Špatný formát', '(?:[a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9])\/(?:[a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9])');
 
-   // $form->addText('expert_command', 'Příkaz experta: composer ')->setOption('id', 'expert_command_id');
-
+    // $form->addText('expert_command', 'Příkaz experta: composer ')->setOption('id', 'expert_command_id');
     //defaults
     $form->setDefaults([
         'action' => 0,
@@ -73,7 +76,8 @@ class HomepagePresenter extends BasePresenter
       $package = $values['bash_action'] == 2 ? trim($values['package_name']) : '';
       $expert = $values['bash_action'] == 3 ? trim($values['expert_command']) : '';
       $this->getSession()->setName('def');
-      $applName = $values['name'];
+
+      $applName = $this->getDirnames($config)[$values['name']];
 
       $id_screen = $this->getSession('def')->screenName;
       if ($id_screen && $id_screen !== -1) {
@@ -95,6 +99,42 @@ class HomepagePresenter extends BasePresenter
       $this->flashMessage('Odesláno v pohodě.');
       $this->redirect('Homepage:');
     }
+  }
+
+  private function getDirnames($config)
+  {
+    if (empty($this->dirnames)) {
+      $browseCommand = $config->get('shellCommands')->browseCommand;
+      $txt = shell_exec($browseCommand);
+      $a = array_filter(explode("\n", $txt), function($value)
+      {
+        return $value !== '';
+      });
+
+      $current = $this->getSession('def')->dirnames;
+
+      if ($this->isAjax() && is_array($current) && !empty($current) && (!empty(array_diff($current, $a)) || !empty(array_diff($a, $current)))) {
+        $this->template->output = 'ready';
+        $this->flashMessage('Změna adresářové struktury. Nutné odeslat požadavek znovu.');
+        try {
+          //abort exception fix
+          $this->redirect('Homepage:');
+        } catch (\Exception $e) {
+          if ($e instanceof AbortException) {
+            throw $e;
+            $this->redirect('Homepage:');
+            exit;
+          }
+        }
+      }
+      $this->dirnames = $this->getSession('def')->dirnames = $a;
+    }
+    return $this->dirnames;
+  }
+
+  private function getDirExists($config)
+  {
+    
   }
 
 }

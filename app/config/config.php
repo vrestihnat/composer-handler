@@ -9,9 +9,10 @@ date_default_timezone_set('Europe/Prague');
 mb_internal_encoding('utf-8');
 setlocale(LC_ALL, 'cs_CZ.UTF-8');
 
-$MAX_LINES_TERMINAL=300;
-$DOCUMENT_ROOT_TERMINAL='/var/www';
+$MAX_LINES_TERMINAL = 300;
+$DOCUMENT_ROOT_TERMINAL = '/var/www';
 return [
+    'documentRoot' => $DOCUMENT_ROOT_TERMINAL,
     'executor' => [
         0 => '/usr/bin/composer',
         1 => '/bin/bash'
@@ -30,7 +31,8 @@ return [
     'shellCommands' => [
         'testEnd' => 'cat /tmp/%s | grep "|||:::|||konec" | wc -l',
         'showTerminal' => 'tail -n' . $MAX_LINES_TERMINAL . ' /tmp/%s',
-        'runCommand' => 'nohup /bin/bash ' . APP_DIR . '/scripts/wrapper.sh "cd '.$DOCUMENT_ROOT_TERMINAL.'/%s && %s %s %s" /tmp/%s >> /tmp/%s &',
+        'runCommand' => 'nohup /bin/bash ' . APP_DIR . '/scripts/wrapper.sh "cd ' . $DOCUMENT_ROOT_TERMINAL . '/%s && %s %s %s" /tmp/%s >> /tmp/%s &',
+        'browseCommand' => '/bin/ls -d1  '. $DOCUMENT_ROOT_TERMINAL.'/* | xargs -n 1 basename',
     ],
     'terminalRefresh' => 250,
 ];
